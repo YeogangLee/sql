@@ -190,7 +190,7 @@ emp 테이블에서 comm 컬럼의 값이 NULL인 사람만 조회
 
 SELECT *
 FROM emp
-WHERE comm Is NULL; -- IS NULL <=> IS NOT NULL
+WHERE comm IS NULL; -- IS NULL <-> IS NOT NULL
       sal = 1000
       sal != 1000
 
