@@ -338,6 +338,14 @@ FROM emp
 WHERE job = 'SALESMAN' OR empno BETWEEN 7800 AND 7899;
 
 
+SELECT *
+FROM emp
+WHERE job = 'SALESMAN'
+OR empno BETWEEN 7800 AND 7899
+OR empno BETWEEN 780 AND 789
+OR empno = 78;
+
+
 
 
 
