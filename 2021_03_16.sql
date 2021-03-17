@@ -313,7 +313,7 @@ SELECT ROWNUM, empno, ename
 FROM (SELECT empno, ename 
       FROM emp
       ORDER BY ename)
-WHERE ROWNUM BETWEEN 6 ADN 10; -- 1을 포함하지 않아 조회X
+WHERE ROWNUM BETWEEN 6 AND 10; -- 1을 포함하지 않아 조회X
 
 
 SELECT *
