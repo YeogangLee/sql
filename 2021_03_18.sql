@@ -501,3 +501,12 @@ grp2]
 SELECT  deptno, MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*)
 FROM emp
 GROUP BY deptno;
+
+
+
+
+
+
+
+
+
