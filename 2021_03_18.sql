@@ -211,7 +211,11 @@ SELECT empno, ename, mgr, NVL(mgr, 9999) ngr_n, NVL2(mgr, mgr, 9999) mgr_n_1, CO
 FROM emp;
 
 SELECT empno, ename, mgr, NVL(mgr, 9999) ngr_n, NVL2(mgr, mgr, 9999) mgr_n_1, COALESCE(mgr, null, 9999) mgr_n_2
-FROM emp;
+FROM emp; -- mgr이 null 값이고 그 다음도 null값이니 그 다음 값인 9999 반환 
+
+SELECT empno, ename, mgr, NVL(mgr, 9999) ngr_n, NVL2(mgr, mgr, 9999) mgr_n_1, COALESCE(mgr, 8888, 9999) mgr_n_2
+FROM emp; -- mgr이 null 값이니 그 다음 값인 8888 반환 
+
 
 
 FUNCTION null 실습 fn5]
