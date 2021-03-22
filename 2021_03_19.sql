@@ -87,8 +87,9 @@ ANSI- NATURAL JOIN
 SELECT ename, dname
 FROM emp NATURAL JOIN dept;
 
-SELECT emp.empno, emp.ename, deptno -- 연결고리 컬럼의 경우는 "한정자"를 쓸 수 없다.
+SELECT emp.empno, emp.ename, deptno -- 연결고리 컬럼(deptno)의 경우는 "한정자"를 쓸 수 없다.
 FROM emp NATURAL JOIN dept;         -- 한정자 내용 0316 내용 참고
+
 
 -- 오라클 조인은 딱 하나
 ORACLE join :
@@ -139,7 +140,7 @@ FROM emp JOIN dept ON (emp.deptno = dept.deptno);
 오라클은 JOIN 이 없고, ANSI에서 JOIN WITH ON 이 쓰이는 부분인 FROM을 WHERE절이 대신한다
 
 
-사원 번호,  사원 이름, 해당 사원의 상사 사번, 해당 사원의 상사 이름 
+사원 번호, 사원 이름, 해당 사원의 상사 사번, 해당 사원의 상사 이름 
 : JOIN WITH ON 을 이용하여 쿼리 작성
 
 -- 이걸 수정
@@ -204,7 +205,7 @@ FROM emp e JOIN salgrade s ON (e.sal = s.grade);
 
 -- ORACLE
 SELECT e.empno, e.ename, e.sal, s.grade
-FROM emp e, salgerade s
+FROM emp e, salgrade s
 WHERE e.sal BETWEEN s.losal AND s.hisal;
 
 -- 이러한 조건을 만들어 낼 수 있어야 한다. 
@@ -212,7 +213,7 @@ WHERE e.sal BETWEEN s.losal AND s.hisal;
 
 -- ANSI
 SELECT e.empno, e.ename, e.sal, s.grade
-FROM emp e JOIN salgerade s ON (e.sal BETWEEN s.losal AND s.hisal);
+FROM emp e JOIN salgrade s ON (e.sal BETWEEN s.losal AND s.hisal);
 
 
 데이터 결합 (실습 join0) join0]
