@@ -83,7 +83,7 @@ FROM member JOIN cart ON (....)
 -- 2개 먼저 써보고 데이터 출력 되면 하나 추가하는 방식으로
 SELECT mem_id, mem_name, prod_id, prod_name, cart_qty
 FROM member JOIN cart ON (member.mem_id = cart.cart_member)
-            JOIN prod ON (cart.cart_prod = prod.prod_id);
+            JOIN prod ON (cart.cart_prod = prod.prod_id); --**
     
 
 -- batch 테이블 추가
@@ -283,7 +283,7 @@ WHERE e.mgr = m.empno;
 SELECT e.ename, m.ename
 FROM emp e, emp m
 WHERE e.mgr = m.empno(+); -- 데이터가 안 나오는 곳에 (+)를 붙여준다.
-
+-- 기준이 아닌 곳에 (+)를 붙여준다?
 
 SELECT e.ename, m.ename, m.deptno
 FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno);
@@ -298,7 +298,7 @@ FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno AND m.deptno = 10);
 
 -- 2. WHERE 절에 조건 10번 기술
 SELECT e.ename, m.ename, m.deptno
-FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno AND m.deptno = 10) -- 여기까지 하면 원래대로 결과행은 14행 
+FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno) -- 여기까지 하면 원래대로 결과행은 14행 
 WHERE m.deptno = 10; -- WHERE에 기술하면 행을 제한하는 조건으로 사용된 것, 그래서 10 데이터 행 말고는 조회 X
 
 -- 오라클 표기, (+)
@@ -307,7 +307,7 @@ FROM emp e, emp m
 WHERE e.mgr = m.empno(+)
   AND m.deptno(+) = 10; -- ORACLE에서는 OUTER JOIN에 연결하는 컬럼을 다 (+)를 붙인다.
 
--- 오라클 표기2 (+)이 없음, ANSI의 행이 제한된 결과
+-- 오라클 표기2 (+)을 부분적으로 사용한 경우, ANSI의 행이 제한된 결과
 SELECT e.ename, m.ename
 FROM emp e, emp m
 WHERE e.mgr = m.empno(+)

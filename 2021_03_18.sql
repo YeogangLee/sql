@@ -444,7 +444,7 @@ GROUP BY deptno;
 
 
 -- GROUP BY 절에 나온 컬럼이 SELECT절에 그룹함수가 적용되지 않은 채로 기술되면 에러
--- 그룹핑을 할 수 없음, 공통점이 없는 2개를 묶어서?
+-- 그룹핑을 할 수 없음 => SELECT와 GROUP BY에 공통 컬럼이 없으면 묶을 수 없다.
 SELECT deptno, empno, MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*)
 FROM emp
 GROUP BY deptno; 
@@ -455,17 +455,32 @@ SELECT deptno,
 FROM emp
 GROUP BY deptno; 
 
+SELECT empno,
+        MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*)
+FROM emp
+GROUP BY empno; 
+
 
 SELECT deptno, 'TEST', 100,
         MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*),
-        SUM(NVL(comm, 0)), -- 이렇게 널처리 해주지 않아도 ㄱㅊ
-        NVL(SUM(comm, 0)) -- 위와 아래 중 아래가 더 효율적, 아래는 널처리를 1번만 하는데, 위는 널 처리를 매 행마다 한다
+         SUM(NVL(comm, 0)) -- 이렇게 널처리 해주지 않아도 ㄱㅊ
+      -- NVL(SUM(comm, 0)) -- 위와 아래 중 아래가 더 효율적, 아래는 널처리를 1번만 하는데, 위는 널 처리를 매 행마다 한다
+                           -- 그런데 아래 코드 조회하면 오류 발생 ...
 FROM emp
 
 -- WHERE LOWER(ename) = 'smith'  
       -- COUNT(*) >= 4 -- 에러
-GROUP BY deptno, -- null과의 연산인데도 값이 무시됨, GROUP BY 에서 알아서...
-HAVING COUNG(*) >= 4; -- 자꾸 에러남
+GROUP BY deptno -- null과의 연산인데도 값이 무시됨, GROUP BY 에서 알아서 처리
+HAVING COUNT(*) >= 4;
+
+위에 정리
+=>
+SELECT deptno, 'TEST', 100,
+        MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*),
+         SUM(comm) -- SUM(NVL(comm, 0))
+FROM emp
+GROUP BY deptno
+HAVING COUNT(*) >= 4; -- deptno = 10은 count(*)가 4 미만이라 조회X 
 
 
 Group function
@@ -487,19 +502,15 @@ Function group function 실습 grp1]
     직원 중 상급자가 있는 직원의 수 null 제외
     전체 직원의 수
 
-SELECT 
-FROM emp
-
-
 grp 1]
 SELECT MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*)
 FROM emp; -- mgr에는 널 값이 1개 있기 때문에 sal보다 1이 적다
 
+
 Function group function 실습 grp2]
-SELECT  deptno, MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*)
+SELECT deptno, MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*)
 FROM emp
 GROUP BY deptno;
-
 
 grp2]
 SELECT  deptno, MAX(sal), MIN(sal), ROUND(AVG(sal), 2), SUM(sal), COUNT(sal), COUNT(mgr), COUNT(*)

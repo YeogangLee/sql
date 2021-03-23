@@ -128,7 +128,7 @@ FROM emp, dept
 WHERE emp.deptno = dept.deptno;
 
 
--- 위의 애들 커버]
+-- 위의 애들 커버 **
 JOIN WITH ON : 
 NATURAL JOIN, JOIN WITH USING 을 대체할 수 있는 보편적인 문법
 조인 컬럼 조건을 개발자가 임의로 지정
@@ -175,9 +175,8 @@ RULE BASE OPTIMIZER(1~15)
 논리적인 조인 형태
 1. SELF JOIN : 조인 테이블이 같은 경우
 - 계층구조(회사 내 직원들의 계급)
-2. NONEQUI-JOIN : 조인 조건이 =(equals)가 아닌 조인 -- 이해 중요]
-SQL은 논리적인 사고를 주로 필요로 한다
--- 생각보다 많이 쓰이니 알아둬라.
+2. NONEQUI-JOIN : 조인 조건이 =(equals)가 아닌 조인 -- 이해 중요 **
+SQL은 논리적인 사고를 주로 필요로 한다               -- 생각보다 많이 쓰이니 알아둬라.
 
 -- 시험 제출]
 SELECT *
@@ -216,7 +215,7 @@ SELECT e.empno, e.ename, e.sal, s.grade
 FROM emp e JOIN salgrade s ON (e.sal BETWEEN s.losal AND s.hisal);
 
 
-데이터 결합 (실습 join0) join0]
+데이터 결합 실습 join0]
 - emp, dept 테이블을 이용하여 다음과 같이 조회되도록 쿼리를 작성하세요
 SELECT e.empno, e.ename, d.deptno, d.dname
 FROM emp e JOIN dept d ON (e.deptno = d.deptno)
@@ -228,7 +227,7 @@ FROM emp, dept
 WHERE emp.deptno = dept.deptno;
 
 
-데이터 결합 (실습 join0_1)
+데이터 결합 실습 join0_1]
 - emp, dept 테이블을 이용하여 다음과 같이 조회되도록 쿼리를 작성
 부서번호가 10, 30인 데이터만 조회
 
@@ -239,7 +238,7 @@ AND emp.deptno IN (10, 30)
 AND dept.deptno IN (10,30); -- 조건 하나만 작성해도 문제 없다
 
 
-데이터 결합 실습 join0_2
+데이터 결합 실습 join0_2]
 - emp, dept 테이블을 이용하여 다음과 같이 조회되도록 쿼리 작성
 급여가 2500 초과
 
@@ -249,7 +248,7 @@ WHERE emp.deptno = dept.deptno
 AND emp.sal > 2500;
 
 
-데이터 결합 (실습 join0_3)
+데이터 결합 실습 join0_3]
 - emp, dept 테이블을 이용하여 다음과 같이 조회되도록 쿼리 작성
 급여 2500 초과, 사번이 7600보다 큰 직원
 
@@ -261,7 +260,7 @@ AND empno > 7600
 ORDER BY empno;
 
 
-데이터 결합 실습 join0_4
+데이터 결합 실습 join0_4]
 - emp, dept 테이블을 이용하여 다음과 같이 조회되도록 쿼리 작성
 급여 2500 초과, 사번이 7600보다 크고, RESEARCH 부서에 속하는 직원
 

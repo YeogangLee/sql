@@ -119,7 +119,17 @@ ORDER BY ename DESC;
 
 SELECT *
 FROM emp
+ORDER BY ename DESC, mgr;
+
+
+SELECT *
+FROM emp
+ORDER BY job;
+
+SELECT *
+FROM emp
 ORDER BY job, sal; -- job을 기준으로 1번 정렬하고, sal을 기준으로 2번 정렬
+
 
 SELECT *
 FROM emp
@@ -141,7 +151,7 @@ SELECT empno, job, mgr
 FROM emp
 ORDER BY 2; -- 2번째 컬럼 - job 컬럼
 
--- ORDER BY를
+-- ORDER BY INDEX를
 -- 추천하지 않는 이유는, 아래처럼 컬럼을 추가하면 index 순서가 바뀌게 된다.
 SELECT ename, empno, job, mgr
 FROM emp
@@ -235,7 +245,7 @@ ORDER BY ename DESC;
  
 ROWNUM: 행번호를 부여하는 특수 키워드 (오라클에서만 제공)
     * 제약사항
-      ROWNUM 은 WHERE 절에서도 사용 가능하다
+      ROWNUM 은 WHERE 절에서도 사용 가능하다 (이제까지는 SELECT 절에만 사용해 왔지만)
       단, ROWNUM의 사용을 1부터 사용하는 경우에만 사용 가능
       WHERE ROWNUM BETWEEN 1 AND 5 ==> O
       WHERE ROWNUM BETWEEN 6 AND 10 ==> X
@@ -292,10 +302,6 @@ SELECT *
 FROM (SELECT empno, ename 
       FROM emp); -- 인라인 뷰를 만들어 조회
 
-SELECT deptno
-FROM (SELECT empno, ename 
-      FROM emp); -- 에러
-
 순서를 역전시키기 위해 "인라인 뷰"를 사용
 정렬을 먼저 하고, ROWNUM 을 부여하기 위해
 
@@ -331,7 +337,7 @@ FROM
 FROM (SELECT empno, ename 
       FROM emp
       ORDER BY ename))
-WHERE rn BETWEEN 1 AND 5;
+-- WHERE rn BETWEEN 1 AND 5;
 WHERE rn BETWEEN 6 AND 10;
 -- rn을 일반적인 컬럼으로 인식
 
@@ -367,6 +373,14 @@ WHERE rn BETWEEN (:page-1)*:pageSize + 1 AND :page*:pageSize ;
 -- :page, :pageSize -> 바인딩 변수
 
 
+SELECT *
+FROM (SELECT ROWNUM rn, empno, ename
+        FROM (SELECT empno, ename 
+                FROM emp
+                ORDER BY ename))
+WHERE rn BETWEEN (:page-1)*:pageSize + 1 AND :page*:pageSize ;
+
+
 -- 구글 검색 mysql paging
 처음 배울 때는 mysql, maria DB가 쉽긴 하다
 but 오라클은 DB랭킹에서 1위를 거의 놓친 적이 없다
@@ -391,12 +405,11 @@ ex. 도로명주소 - 한 번
 ROWNUM 1]
 - emp 테이블에서 ROWNUM 값이 1~10인 값만 조회하는 쿼리를 작성해보세요.
 (정렬없이 진행하세요, 결과는 화면과 다를 수 있습니다.)
--- 정렬없이 진행하려면 뭘 없애야 하는 거지
 
 SELECT ROWNUM rn, empno, ename
 FROM emp
 WHERE ROWNUM BETWEEN 1 AND 10;
-
+-- WHERE rn BETWEEN 1 AND 10; -- 오류 발생m, rn을 인식하지 못함, 괄호를 사용(인라인뷰)하는 이유
 
 ROWNUM 2]
 가상컬럼 ROWNUM
