@@ -109,13 +109,13 @@ outerjoin5]
 outerjoin4를 바탕으로 고객 이름 컬럼 추가하기
 -> customer 테이블에 있는 고객 이름을 어떻게 들고올 것인가
 
-SELECT product.*, :cid, NVL(cycle.day,0) day, NVL(cycle.cnt,0) cnt, cnm
+SELECT product.*, :cid, NVL(cycle.day,0) day, NVL(cycle.cnt,0) cnt, customer.cnm
 FROM product, cycle, customer
 WHERE product.pid = cycle.pid(+)
-  AND cid(+) = :cid
-  AND customer.cid(+) = product.cid;
-
-
+  AND cycle.cid(+) = :cid
+  AND cycle.cid = customer.cid(+)
+  AND customer.cid(+) = :cid;
+  
 
 -- 지금까지 강조한 것, 개념을 잘 정리할 필요
 1. WHERE
@@ -129,6 +129,7 @@ WHERE product.pid = cycle.pid(+)
 
 SELECT *
 FROM dept JOIN emp ON (dept.deptno = emp.deptno); -- INNER 키워드가 없더라도 INNER JOIN
+
 
 CROSS JOIN
 - 별도의 연결 조건이 없는 조인
