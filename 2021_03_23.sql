@@ -31,6 +31,21 @@ P102000005  22
 - buyprod 테이블에 구매일자가 2005년 1월 25일인 데이터는 3품목 밖에 없다.
 모든 품목이 나올 수 있도록 쿼리를 작성해보세요.
 
+-- ORACLE
+SELECT buy_date, buy_prod, prod_id, prod_name, buy_qty
+FROM buyprod, prod
+WHERE buyprod.buy_prod(+) = prod.prod_id
+  AND buyprod.buy_date(+) = TO_DATE('20050125', 'YYYYMMDD');
+
+-- ANSI
+SELECT buy_date, buy_prod, prod_id, prod_name, buy_qty
+FROM buyprod RIGHT OUTER JOIN prod ON (buyprod.buy_prod(+) = prod.prod_id 
+                                       AND buyprod.buy_date(+) = TO_DATE('20050125', 'YYYYMMDD'));
+
+
+select *
+from prod;
+
 SELECT buy_date, buy_prod, prod_id, prod_name, buy_qty
 FROM buyprod, prod
 WHERE buy_date = TO_DATE('2005/01/25', 'YYYY/MM/DD');
@@ -38,11 +53,10 @@ WHERE buy_date = TO_DATE('2005/01/25', 'YYYY/MM/DD');
 기준이 되는 것 prod, 왜냐하면 3,4,5 열이 지금 NULL 값이 없으니까? XXXXXXXXXXXXXXX
 => 기준이 prod가 되는 이유는, 문제의 요구사항에 그렇게 적혀있기 때문, "모든 품목이 나올 수 있도록"
 
--- ANSI
-SELECT buy_date, buy_prod, prod_id, prod_name, buy_qty
-FROM buyprod RIGHT OUTER JOIN prod ON (buyprod.buy_prod = prod.prod_id AND buy_date = TO_DATE('2005/01/25', 'YYYY/MM/DD'));
 
--- 한 행으로 다 합하면 모든 행수를 구할 수 있다, 이것과 아우터 조인했을 때의 값이 같아야 한다.
+-- 한 행으로 다 합하면 모든 행수를 구할 수 있다
+-- 이것과 아우터 조인했을 때의 값이 같아야 한다.
+=> OUTER JOIN 결과 = OUTER JOIN의 기준이 되는 테이블의 행 수와 동일
 SELECT COUNT(*)
 FROM prod;
 
@@ -53,7 +67,11 @@ FROM prod;
 SELECT buy_date, buy_prod, prod_id, prod_name, buy_qty
 FROM buyprod, prod 
 WHERE buyprod.buy_prod(+) = prod.prod_id 
-AND buy_date(+) = TO_DATE('2005/01/25', 'YYYY/MM/DD');
+  AND buy_date(+) = TO_DATE('2005/01/25', 'YYYY/MM/DD');
+
+SELECT *
+FROM buyprod;
+
 
 
 outerjoin2]
@@ -75,7 +93,7 @@ WHERE buyprod.buy_prod(+) = prod.prod_id
 
 outerjoin4] 
 - cycle, product 테이블을 이용해 고객이 애음하는 제품 명칭을 표현하고,
-애음하지 않는 제품도 다음과 같이 조회되도록 쿼리를 작서하세요
+애음하지 않는 제품도 다음과 같이 조회되도록 쿼리를 작성하세요
 (고객은 cid=1인 고개만 나오도록 제한, null 처리)
 
 SELECT *
@@ -102,6 +120,9 @@ SELECT product.*, :cid, NVL(cycle.day,0) day, NVL(cycle.cnt,0) cnt
 FROM product, cycle
 WHERE product.pid = cycle.pid(+)
   AND cid(+) = :cid;
+  -- cid 뒤의 (+) 기호를 빼면 200, 300 제품의 행 출력 X 
+  -- 그리고 cid 컬럼은 CYCLE, CUSTOMER에 있다.
+  
   
 
 -- 과제@
@@ -113,8 +134,23 @@ SELECT product.*, :cid, NVL(cycle.day,0) day, NVL(cycle.cnt,0) cnt, customer.cnm
 FROM product, cycle, customer
 WHERE product.pid = cycle.pid(+)
   AND cycle.cid(+) = :cid
-  AND cycle.cid = customer.cid(+)
+  AND cycle.cid = customer.cid -- cycle 테이블쪽 null 값을 처리해서 JOIN
+  AND customer.cid = :cid;
+
+--
+SELECT product.*, :cid, NVL(cycle.day,0) day, NVL(cycle.cnt,0) cnt, customer.cnm
+FROM product, cycle, customer
+WHERE product.pid = cycle.pid(+)
+  AND cycle.cid(+) = :cid
+  AND cycle.cid = customer.cid(+) 
   AND customer.cid(+) = :cid;
+  
+SELECT *
+from customer;
+
+SELECT product.pid, pnm, :cid, cnm, NVL(day, 0) AS day, NVL(cnt, 0) AS cnt
+FROM product LEFT OUTER JOIN cycle ON (product.pid = cycle.pid AND cycle.cid = :cid)
+    LEFT OUTER JOIN customer ON (:cid = customer.cid);
   
 
 -- 지금까지 강조한 것, 개념을 잘 정리할 필요

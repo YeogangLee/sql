@@ -23,12 +23,6 @@ FROM prod JOIN lprod ON (lprod.lprod_gu = prod.prod_lgu);
 - erd 다이어그램을 참고하여 buyer, prod 테이블을 조인하여
 buyer별 담당하는 제품 정보를 다음과 같은 결과가 나오도록 쿼리를 작성해보세요.
 -- buyer별 @
-
-SELECT b.buyer_id, b.buyer_name, p.prod_id, p.prod_name
-FROM buyer b, prod p
-GROUP BY b.buyer_id
-HAVING b.buyer_id;
-
 -- buyer 별로 그룹 X, alias 전부 없어도 실행 가능
 SELECT b.buyer_id, b.buyer_name, p.prod_id, p.prod_name
 FROM buyer b, prod p
@@ -44,7 +38,7 @@ WHERE b.buyer_id = p.prod_buyer;
 데이터 결합 실습 join3]
 - erd 다이어그램을 참고하여 member, cart, prod 테이블을 조인하여
 회원별 장바구니에 담은 제품 정보를 다음과 같은 결과가 나오는 쿼리를 작성해보세요.
-(핵심: 테이블 3개 조인, 초심자에게는 oracle 표기가 더 편할 것)
+(핵심** 테이블 3개 조인, 초심자에게는 oracle 표기가 더 편할 것)
 
 SELECT mem_id, mem_name, prod_id, prod_name, cart_qty
 FROM member, cart, prod
@@ -123,6 +117,10 @@ WHERE cu.cid = cy.cid
 -- ANSI
 SELECT cu.cid, cnm, pid, day, cnt
 FROM customer cu JOIN cycle cy ON (cu.cid = cy.cid AND cnm IN ('brown', 'sally')); 
+
+SELECT cu.cid, cnm, pid, day, cnt
+FROM customer cu JOIN cycle cy ON (cu.cid = cy.cid)
+                 AND cnm IN ('brown', 'sally'); 
   
   
 join4]
@@ -138,7 +136,7 @@ WHERE customer.cid = cycle.cid
 
 데이터 결합 join5]
 -- ORACLE
-SELECT cu.cid, cnm, cy.pid, pnm, day, cnt
+SELECT cu.cid, cnm, cy.pid, day, cnt, pnm
 FROM customer cu, cycle cy, product p
 WHERE cu.cid = cy.cid
   AND cy.pid = p.pid
@@ -149,6 +147,7 @@ SELECT cu.cid, cnm, cy.pid, pnm, day, cnt
 FROM customer cu JOIN cycle cy ON (cu.cid = cy.cid) 
                  JOIN product p ON (cy.pid = p.pid)
                  AND cnm IN ('brown', 'sally');  
+
 
 join5]
 SELECT customer.cid, customer.cnm, cycle.pid, product.pnm, cycle.day, cycle.cnt -- 4번에서 여기에 pnm을 추가
@@ -168,38 +167,60 @@ SELECT customer.cid, customer.cnm, cycle.pid, product.pnm, SUM(cycle.cnt) cnt
 FROM customer, cycle, product
 WHERE customer.cid = cycle.cid
   AND cycle.pid = product.pid
-  AND customer.cnm IN ('brown', 'sally')
+--  AND customer.cnm IN ('brown', 'sally', 'cony')
+  AND customer.cnm IN (SELECT cnm from customer)
 GROUP BY customer.cid, customer.cnm, cycle.pid, product.pnm;
 -- GROUP BY 전의 쿼리 결과를 보면 컬럼 4개의 값이 같다, 저걸로 GROUP BY 해줘라
 
 -- // 이걸로 기본형태 잡고, 여기서 필요 없는 정보 날리기
 
--- @에러, 수정했는데 다시 보기
+
 SELECT customer.cid, customer.cnm, cycle.pid, product.pnm, SUM(cycle.cnt) cnt
-FROM cycle, product
-WHERE cycle.pid = product.pid
+FROM customer, cycle, product
+WHERE customer.cid = cycle.cid
+  AND cycle.pid = product.pid
 GROUP BY customer.cid, customer.cnm, cycle.pid, product.pnm;
 
-
-
+                 
 -- ANSI 
-SELECT cu.cid, cnm, cy.pid, pnm, cnt
+SELECT customer.cid, customer.cnm, cycle.pid, product.pnm, SUM(cycle.cnt) cnt
+FROM customer JOIN cycle ON (customer.cid = cycle.cid) 
+              JOIN product ON (cycle.pid = product.pid)
+GROUP BY customer.cid, customer.cnm, cycle.pid, product.pnm;
+
+-- ANSI 별칭 사용
+SELECT cu.cid, cu.cnm, cy.pid, p.pnm, SUM(cy.cnt) cnt
 FROM customer cu JOIN cycle cy ON (cu.cid = cy.cid) 
-                 JOIN product p ON (cy.pid = p.pid);
+                 JOIN product p ON (cy.pid = p.pid)
+GROUP BY cu.cid, cu.cnm, cy.pid, p.pnm;
+                 
+                 
 -- 테이블 3개 JOIN 
 -- 뒤에 ON(조건) 키워드 없을시 오류 발생
 -- 오라클 표기에서 WHERE이 없다고 해서, ANSI 표기에서 ON을 없애면 안 된다. 
 
 
 데이터 결합 join7]
--- ORACLE
+-- ORACLE - 필기했던 것
 SELECT cy.pid, pnm, cnt
 FROM cycle cy, product p
 WHERE cy.pid = p.pid;
 
--- ANSI
+-- ORACLE - 내가 풀기
+SELECT cy.pid, pnm, SUM(cy.cnt) cnt
+FROM cycle cy, product p
+WHERE cy.pid = p.pid
+GROUP BY cy.pid, pnm;
+
+
+-- ANSI - 필기했던 것
 SELECT cy.pid, pnm, cnt
 FROM cycle cy JOIN product p ON (cy.pid = p.pid);
+
+-- ANSI - 내가 풀기
+SELECT cy.pid, pnm, SUM(cy.cnt)
+FROM cycle cy JOIN product p ON (cy.pid = p.pid)
+GROUP BY cy.pid, pnm;
 
 
 -- username 추가
@@ -282,39 +303,54 @@ WHERE e.mgr = m.empno;
 -- 2. 누락이 되는 쪽 괄호 안에 +
 SELECT e.ename, m.ename
 FROM emp e, emp m
-WHERE e.mgr = m.empno(+); -- 데이터가 안 나오는 곳에 (+)를 붙여준다.
--- 기준이 아닌 곳에 (+)를 붙여준다?
+WHERE e.mgr = m.empno(+); 
+-- 데이터가 안 나오는 곳에 (+)를 붙여준다.
+-- => 기준이 아닌 곳에 (+)를 붙여준다
 
 SELECT e.ename, m.ename, m.deptno
 FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno);
--- LEFT OUTER JOIN 사용 -> 오른쪽은 기준이 아니라 둘 다 null 값이 나오는 걸 확인
+-- LEFT OUTER JOIN 사용 
+-- -> 오른쪽은 기준이 아니라 m.ename, m.deptno 컬럼 둘 다 null 값
+-- SELECT e.ename, m.ename, e.deptno를 사용한다면 
+-- 기준 테이블의 deptno를 사용하므로 m.ename 컬럼만 null 값
 
 
 -- 아래 둘 비교
+-- OUTER JOIN에서 WHERE 절 AND의 위치 : ON 안 VS 밖 
+
 -- 1. ON 절에 조건 10번 기술
 SELECT e.ename, m.ename, m.deptno
 FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno AND m.deptno = 10);
--- SELECT의 ename은 나오고 뒤에 2개는 안 나오는 상황, emp m의 데이터를 deptno 10번 말고 다 지웠기 때문(조건에 그렇게 기술되어 있으니)
+-- SELECT의 ename은 나오고 뒤에 2개는 안 나오는 상황
+-- -> emp m의 데이터를 deptno 10번 말고 다 지웠기 때문 (조건에 그렇게 기술되어 있으니)
 
 -- 2. WHERE 절에 조건 10번 기술
 SELECT e.ename, m.ename, m.deptno
 FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno) -- 여기까지 하면 원래대로 결과행은 14행 
 WHERE m.deptno = 10; -- WHERE에 기술하면 행을 제한하는 조건으로 사용된 것, 그래서 10 데이터 행 말고는 조회 X
 
--- 오라클 표기, (+)
+
+-- 아래 둘 비교2
+-- ORACLE의 OUTER JOIN에서 OPERATOR(+) 부분 누락
+
+-- 정상적인 ORACLE OUTER JOIN 연산자 (+)표기
 SELECT e.ename, m.ename
 FROM emp e, emp m
 WHERE e.mgr = m.empno(+)
-  AND m.deptno(+) = 10; -- ORACLE에서는 OUTER JOIN에 연결하는 컬럼을 다 (+)를 붙인다.
+  AND m.deptno(+) = 10; 
+-- ORACLE에서는 OUTER JOIN에 연결하는 컬럼을 다 (+)를 붙인다.
+-- (+)를 인식하고 정상적인 OUTER JOIN이 수행된다.  
 
--- 오라클 표기2 (+)을 부분적으로 사용한 경우, ANSI의 행이 제한된 결과
+
+-- 부분 누락된 ORACLE OUTER JOIN 연산자 (+)표기
 SELECT e.ename, m.ename
 FROM emp e, emp m
 WHERE e.mgr = m.empno(+)
   AND m.deptno = 10;
+-- = ANSI의 행이 제한된 결과
+-- OUTER JOIN 연산자(+)가 없을 시, AND 뒤의 내용을 일반적인 조건으로 취급
 
-
--- 선생님 의견으로는 오라클 표기가 더 편하고, 어떤 표기를 쓸 것인지는 입사한 회사에서 알려줄 것
+-- 선생님 의견으로는 ORACLE 표기가 더 편하고, 어떤 표기를 쓸 것인지는 입사한 회사에서 알려줄 것
 
 
 -- 아래의 둘은 같은 말
@@ -325,12 +361,33 @@ SELECT e.ename, m.ename, m.deptno
 FROM emp m RIGHT OUTER JOIN emp e ON (e.mgr = m.empno);
 
 
+엑셀로 그려보기]
 -- 데이터는 몇 건이 나올까? 그려볼 것
 SELECT e.ename, m.ename, m.deptno
 FROM emp e RIGHT OUTER JOIN emp m ON (e.mgr = m.empno);
+-- 셀렉트 : e.직원이름, m.직원이름, m.부서번호
+-- JOIN ON (e.매니저 = m.직원번호)
 
 SELECT e.empno, e.ename, e.mgr, m.empno, m.ename, m.mgr
 FROM emp e, emp m;
+-- 직원번호, 직원이름, 매니저
+
+-- 검색) 오라클 테이블 컬럼명 가져오기 명렁어
+select column_name from user_tab_columns where table_name = upper('emp');
+
+SELECT *
+FROM emp
+ORDER BY mgr;
+
+SELECT *
+FROM emp
+ORDER BY empno;
+
+-- ORACLE
+SELECT e.ename, m.ename, m.deptno
+FROM emp e, emp m
+WHERE e.mgr(+) = m.empno;
+
 
 -- 직접 그려보기, 몇 번을 매니저 컬럼으로 하는 값이 있나요?
 e.ename     m.ename
@@ -357,6 +414,7 @@ SMITH       FORD ^^
 NULL        MILLER
 
 총 21행, 이렇게 이런 식으로 따라 가면 돼요.
+(+ 색칠된 것 13행, 자신을 mgr로 하는 직원이 없는 직원 8행)
 
 지금 이 설명 이유 -> FULL OUTER JOIN 때문에
 FULL OUTER JOIN = LEFT OUTER + RIGHT OUTER - 중복데이터 제거

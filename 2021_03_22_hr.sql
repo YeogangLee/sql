@@ -1,3 +1,27 @@
+-- username 추가
+/*
+SELECT *
+FROM dba_users;
+
+-- 지금부터 hr username을 살릴 것
+
+ALTER USER hr ACCOUNT UNLOCK;
+-- User HR이(가) 변경되었습니다.
+
+-- 다시 조회
+SELECT *
+FROM dba_users;
+
+-- hr 계정의 비밀번호를 java로 변경
+ALTER USER hr IDENTIFIED BY java;
+-- User HR이(가) 변경되었습니다.
+
+-- 다시 조회
+SELECT *
+FROM dba_users;
+
+*/
+
 SELECT *
 FROM jobs;
 -- hr 계정 밖에서 입력하면 없는 테이블이라고 뜬다.
