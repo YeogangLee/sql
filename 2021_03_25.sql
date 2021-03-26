@@ -59,7 +59,7 @@ EXISTS : WHERE EXISTS(서브쿼리)
             서브쿼리가 1000건이라 하더라도 10번째 행에서 EXISTS 연산을 만족하는 행을 발견하면
             나머지 990건 정도의 데이터는 확인하지 않는다
             
-연산자 : 몇 항
+연산자 : 몇 항을 필요로 하는지 알고 접근하면 좋다.
 
 -- 매니저가 존재하는 직원
 SELECT *
@@ -71,7 +71,7 @@ FROM emp e
 WHERE EXISTS (SELECT empno
               FROM  emp m
               WHERE e.mgr = m.empno);
-              -- WHERE 7902 = m.empno); 조회 가능 -> 참, 값에 상관없이 참, 거짓 판단
+              -- WHERE 7902 = m.empno); 조회 가능할까? 가능 -> 참 : 값에 상관없이 참, 거짓 판단
               
 SELECT *
 FROM emp e
@@ -243,7 +243,7 @@ FROM emp
 WHERE empno IN (7369, 7521)
 ORDER BY e;
 
-3. 중복이 제거된다 (예외 UNION ALL)
+3. 중복이 제거된다 (예외 UNION ALL - UNION ALL 은 중복 허용)
 
 
 [4. 9i 이전버전 : 그룹 연산을 하게 되면 기본적으로 오름차순 정렬되어 나온다
