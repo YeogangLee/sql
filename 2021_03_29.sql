@@ -30,7 +30,7 @@ CONNECT BY PRIOR deptcd = p_deptcd; -- 하향
 -- CONNECT BY PRIOR p_deptcd = deptcd; -- 상향
 
 나부터 방문? 자식부터 방문?
-ORACLE 계층 쿼리의 탐색 순서는 ? PRE-ORDER
+ORACLE 계층 쿼리의 탐색 순서는 ? PRE-ORDER 프리오더, 
 LEVEL-ORDER이려면
 A
 _B
