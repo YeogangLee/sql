@@ -51,7 +51,7 @@ KING                PRESIDENT
 
 
 계층 쿼리와 관련된 특수 함수
-1. CONNECT_BY_ROOD(컬럼) : 최상위 노드의 해당 컬럼 값
+1. CONNECT_BY_ROOT(컬럼) : 최상위 노드의 해당 컬럼 값
 
 SELECT LPAD(' ', (LEVEL-1)*4) || ename ename, CONNECT_BY_ROOT(ename) root_ename
 FROM emp
@@ -66,7 +66,7 @@ CONNECT BY PRIOR empno = mgr;
     답글1
  
 계층 쿼리와 관련된 특수 함수
-1. CONNECT_BY_ROOD(컬럼) : 최상위 노드의 해당 컬럼 값
+1. CONNECT_BY_ROOT(컬럼) : 최상위 노드의 해당 컬럼 값
 2. SYS_CONNECT_BY_PATH(컬럼, '구분자문자열') : 최상위 행부터 현재 행까지의 해당 컬럼의 값을 구분자로 연결한 문자열
 -- 이 함수를 인터넷에서 찾아보면
 -- LTRIM 함수를 같이 사용하는 경우가 많다, 최상위 노드 앞에 붙는 - 문자를 지우기 위해
@@ -135,7 +135,7 @@ FROM board_test
 -- START WITH SEQ IN (1, 2, 4) -- 게시글은 언제든 추가, 삭제될 수 있으므로 값이 고정되어 있는 이런 표현은 좋지 않다
 START WITH PARENT_SEQ IS NULL
 CONNECT BY PRIOR seq = parent_seq
--- ORDER BY SEQ DESC; -- 이렇게 하면 계층 구조가 깨진다
+--ORDER BY SEQ DESC; -- 이렇게 하면 계층 구조가 깨진다, 답글의 순서가 엉망
 ORDER SIBLINGS BY SEQ DESC;
 -- SIBLINGS : 계층 구조 유지 키워드
 
