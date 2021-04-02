@@ -50,7 +50,7 @@ FROM (SELECT empno, ename
       FROM emp
       ORDER BY ename))
 WHERE rn BETWEEN (:page-1)*:pageSize + 1 AND :page*:pageSize ;
--- :page, :pageSize -> 바인딩 변수
+-- :page, :pageSize -> 바인드 변수
 
 
 #Function
@@ -238,8 +238,8 @@ FUNCTION DATE 실습 fn1]
 위 4개 컬럼을 생성하여 다음과 같이 조회하는 쿼리를 작성하세요.
 (PT 예시는 현재 날짜가 2019/10/24)
 
-SELECT TO_DATE('19/12/31', 'YYYY/MM/DD') LASTDAY,
-       TO_DATE('19/12/31', 'YYYY/MM/DD') - 5 LASTDAY_BEFORE5,
+SELECT TO_DATE('2019/12/31', 'YYYY/MM/DD') LASTDAY,
+       TO_DATE('2019/12/31', 'YYYY/MM/DD') - 5 LASTDAY_BEFORE5,
        SYSDATE NOW,
        SYSDATE - 3 NOW_BEFORE3
 FROM dual;
