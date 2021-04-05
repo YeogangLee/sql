@@ -27,7 +27,7 @@ CREATE SEQUENCE 시퀀스명
 - INCREMENT BY n : 증감값, 생략시 1으로 설정된다
 - MAXVALUE n : 사용하는 최대값, default 는 NOMAXVALUE 이고 10^27까지 사용
     ex. 생산 제품 300가지 -> 제품 코드 9900번까지 쓸 수 있게 하자.
-    한 컬럼이 가질 수 있는 값의 범위 => ? 숙제
+    한 컬럼이 가질 수 있는 값의 범위 => ? 숙제 - 도메인
     
 - MINVALUE n : 사용하는 최소값, default 는 NOMINVALUE 이고 생략시 1으로 설정
 - CYCLE : 최대(최소)까지 도달한 후 다시 시작할 것인지 여부 default 는 NOCYCLE
