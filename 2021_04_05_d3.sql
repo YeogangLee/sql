@@ -117,10 +117,10 @@ SIDE EFFECT 부작용
 DECLARE
 /선언영역/
 -- 변수, 상수, 커서 선언
--- 상수 - 자바의 FINAL INT
+-- 상수 CONSTANT - 자바의 FINAL INT
 -- 클래스 앞에 FINAL 사용 - 불임 클래스 생성
--- 왼쪽 = 오른쪽
--- : 변수만이 왼쪽 LEFT VALUE 에 올 수 있다 -> 상수는 오른쪽에만 온다
+-- 왼쪽 = 오른쪽 -> 오른쪽 값을 왼쪽에 대입
+-- : 변수만이 왼쪽 LEFT VALUE 에 올 수 있다 -> 상수 CONSTANT는 오른쪽에만 온다
 -- 커서 - SQL 명령에 영향을 받는 것들의 집합
 BEGIN
 /실행영역/
@@ -192,7 +192,8 @@ END;
     -> 과거의 정처기 문제, 현재는 구분이 모호해짐
     요즘 언어들은 대부분 2개를 다 섞어 쓴다, 자바도 그렇고.
     바인딩(변수의 값을 저장) 타입/타임이 ... 어떻냐에 따라 둘을 구분할 수 있기는 하다
-    통로 역할을 하는 매개변수
+    
+    - 통로 역할을 하는 매개변수
     : IN 타입, OUT 타입, INOUT 타입
     INOUT은 IN, OUT 둘 다 사용할 수 있지만, 부담을 너무 많이 주므로 웬만해서는 INOUT 타입 사용 금지 권고
 
@@ -223,7 +224,7 @@ END;
          SUM(PROD_PRICE * CART_QTY) AS 구매금액합 
     FROM CART A, MEMBER B, PROD C
    WHERE A.CART_MEMBER = B.MEM_ID
-     AND A.CART_PROD = C.PROD_ID -- 이거를 생락해도 결과는 같다.
+     AND A.CART_PROD = C.PROD_ID -- 이거를 생략해도 결과는 같다.
 GROUP BY A.CART_MEMBER, B.MEM_NAME
 ORDER BY 3 DESC;                  
 
@@ -235,7 +236,7 @@ ORDER BY 3 DESC;
     FROM CART A, MEMBER B, PROD C
    WHERE A.CART_MEMBER = B.MEM_ID
      AND A.CART_PROD = C.PROD_ID
-     AND ROWNUM = 1
+     --AND ROWNUM = 1
 GROUP BY A.CART_MEMBER, B.MEM_NAME
 ORDER BY 3 DESC;                  
 -- 왜 구매금액이 가장 많은 회원인 신영남이 안 나왔을까?
@@ -248,7 +249,21 @@ SELECT D.MID AS 회원번호,
                SUM(C.PROD_PRICE * A.CART_QTY) AS AMT
           FROM CART A, PROD C
          WHERE A.CART_PROD = C.PROD_ID
-           AND ROWNUM = 1
+           --AND ROWNUM = 1
+      GROUP BY A.CART_MEMBER
+      ORDER BY 2 DESC) D, MEMBER B
+WHERE D.MID = B.MEM_ID
+  AND ROWNUM = 1;
+  
+-- 서브쿼리 내의 AND ROWNUM = 1 삭제 후
+-- 정상적으로 신영남 조회 가능
+SELECT D.MID AS 회원번호,
+       B.MEM_NAME AS 회원명,
+       D.AMT AS 구매금액합
+  FROM (SELECT A.CART_MEMBER AS MID,
+               SUM(C.PROD_PRICE * A.CART_QTY) AS AMT
+          FROM CART A, PROD C
+         WHERE A.CART_PROD = C.PROD_ID
       GROUP BY A.CART_MEMBER
       ORDER BY 2 DESC) D, MEMBER B
 WHERE D.MID = B.MEM_ID
