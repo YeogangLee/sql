@@ -1,3 +1,35 @@
+2021-04-01_01
+/*
+01
+VIEW 객체
+- 보안성, QUERY 실행의 효율성, TABLE의 은닉성을 위해 사용
+
+- VIEW 생성
+CREATE VIEW V_뷰이름
+CREATE OR REPLACE VIEW V_MEMBER01
+AS 
+    SELECT mem_id AS 회원번호, 
+           mem_name AS 회원명, 
+           mem_job AS 직업, 
+           mem_mileage AS 마일리지
+    FROM member
+    WHERE mem_mileage >= 3000;
+    
+- VIEW 삭제
+DROP VIEW 뷰이름;
+
+- 집으로 오라클 sql 파일 복사하는 방법(SQL export 기능, cmd창 이용)
+
+- CURSOR 커서 : 셀렉트 문 쿼리에 영향을 받은 행들의 집합
+  커서를 이용하면 여러 행에 접근이 가능하다.
+  
+  
+[문제 : 조건을 만족하는 테이블 컬럼 조회,
+        테이블 컬럼값 변경, 뷰 컬럼값 변경,
+        조건을 만족하는 테이블 컬럼을 이용한 뷰 생성
+*/
+
+
 RDBMS는 검색이 주를 이룬다
 빅데이터 등장 이후 검색보다 삽입, 삭제가 주 목적이 됨
 SELECT 보다는 나머지 명령어 사용 빈도수가 늘어나게 되었다 > 중요도++
@@ -120,7 +152,7 @@ UPDATE V_MEMBER01
  WHERE MEM_NAME = '신용환'; -- 회원명 = '신용환'
  
 SELECT * FROM V_MEMBER01;
--- 신용환 회원 행이 사라졌다.
+-- 뷰에서 신용환 회원 행이 사라졌다.
 -- 이유 : 뷰 생성 조건이 마일리지 3천 이상, 마일리지를 500으로 수정하니 조건 불만족 -> 뷰에 포함X
 
 
