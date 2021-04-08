@@ -1,4 +1,62 @@
-2021-04-02
+2021-04-02_01
+/*
+01
+SEQUENCE 객체
+: 자동으로 증가되는 값을 반환할 수 있는 객체
+  
+생성 방법
+CREATE SEQUENCE SEQ_시퀀스명
+ START WITH 시작값;
+ 
+생성 후 조회
+SELECT SEQ_LPROD.CURRVAL
+ FROM dual;
+
+- AUTO INCREMENT 컬럼 속성 vs SEQUENCE 객체
+: 객체는 테이블에 독립적이므로,
+여러 테이블에서 동시에 SEQUENCE 객체 이용 가능
+
+- 시퀀스가 사용되는 곳
+SELECT 문의 SELECT 절 (서브쿼리는 제외)
+INSERT 문의 SELECT 절 (서브쿼리), VALUES 절
+-- ㄴ 시퀀스 문제로 접했던 조건
+UPDATE 문의 SET 절
+
+- 시퀀스 사용이 제한되는 곳
+
+
+02
+SYNONYM 객체
+: 동의어를 의미, 긴 이름의 객체를 쉽게 사용하기 위한 용도로 주로 사용
+
+생성 방법
+: CREATE OR REPLACE SYNONYM 시너넘이름 FOR 객체명ex.테이블명;
+
+- 테이블 별칭은 해당 쿼리 안에서만 유효하지만,
+SYNONYM 동의어는 해당 데이터베이스를 사용하는 동안 계속 존재한다
+
+
+03
+INDEX 객체
+: 데이터 검색 효율을 증대 시키기 위한 도구
+  !주의! 별도의 추가공간이 필요하고 INDEX FILE 을 위한 PROCESS 가 요구됨
+
+생성 방법
+: CREATE INDEX 인덱스명 ON 테이블명(컬럼명1);
+
+삭제 방법 
+: DROP INDEX 인덱스명;
+
+- 인덱스의 종류
+UNIQUE		- 중복X, null 값을 가질 수 있다
+NON UNIQUE	- 중복 허용
+NORMAL INDEX 	- 기본 인덱스, 트리 구조로 구성
+
+[문제
+1. 시퀀스를 이용하여 테이블에 자료 삽입
+2. SYNONYM 을 이용한 테이블 조회
+*/
+
 AUTO INCREMENT 속성
 : 참 -> 행을 하나씩 증가시킬 때, 자동으로 값도 하나씩 증가한다?
 
@@ -120,7 +178,11 @@ FROM cart;
 SELECT TO_CHAR(SYSDATE, 'YYYYMMDD') || MAX(SUBSTR(CART_NO, 9)) + 1
 FROM cart;
 
-SELECT TO_CHAR(TO_CHAR(SYSDATE, 'YYYYMMDD') || MAX(SUBSTR(CART_NO, 9)) + 1)
+-- 현재가 2005년 7월 28일이라면 SYSDATE 이용 가능
+--SELECT TO_CHAR(TO_CHAR(SYSDATE, 'YYYYMMDD') || MAX(SUBSTR(CART_NO, 9)) + 1)
+--FROM cart;
+
+SELECT TO_CHAR('20050728' || MAX(SUBSTR(CART_NO, 9)) + 1)
 FROM cart;
 SELECT TO_CHAR(MAX(CART_NO)+1) 
 FROM cart;
@@ -137,14 +199,16 @@ SELECT MAX(SUBSTR(CART_NO, 9)) FROM CART;
 CREATE SEQUENCE SQL_CART
     START WITH 5;
     
-INSERT INTO cart(cart_member, cart_no, cart_prod, cart_only)
-VALUES('m001', TO_CHAR(SYSDATE, 'YYYYMMDD') || TRIM(TO_CHAR(SQL_CART, '99999'));
+INSERT INTO cart(cart_member, cart_no, cart_prod, cart_qty)
+VALUES('m001', TO_CHAR(SYSDATE, 'YYYYMMDD')||TRIM(TO_CHAR(SQL_CART, '99999')), 'P201000004', 5);
+-- 오류 발생: column not allowed here 
+-- SQL_CART.NEXTVAL 을 이용하지 않아서
 
-INSERT INTO cart(cart_member, cart_no, cart_prod, cart_only)
+INSERT INTO cart(cart_member, cart_no, cart_prod, cart_qty)
 VALUES('m001', TO_CHAR(SYSDATE, 'YYYYMMDD') ||
-      TRIM(TO_CHAR(SQL_CART.NEXTVAL, '00000'))), 'P201000004', 5);
+      TRIM(TO_CHAR(SQL_CART.NEXTVAL, '00000')), 'P201000004', 5);
       
-      
+select * from cart;      
 
 
 -- 대전 SW개발회사
