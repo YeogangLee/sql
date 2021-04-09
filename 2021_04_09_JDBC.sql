@@ -1,0 +1,56 @@
+DESC COUNTRIES;
+
+DESC LPROD;
+
+INSERT INTO lprod
+VALUES(10, 'P000', 'DVD');
+
+SELECT * FROM LPROD;
+
+DELETE FROM LPROD WHERE LPROD_ID = 10;
+
+UPDATE LPROD
+   SET LPROD_NM = '음반/CD/DVD'
+ WHERE LPROD_ID = 7;
+ 
+UPDATE LPROD SET LPROD_NM = '음반/CD/DVD' WHERE LPROD_ID = 7;
+
+COMMIT;
+-- 업데이트 끝나면 COMMIT 해주기, 안 그러면 오류
+
+SELECT * FROM LPROD;
+
+SELECT *
+  FROM LPROD
+ WHERE LPROD_ID IS NOT NULL;
+ 
+ SELECT *
+  FROM LPROD
+ WHERE LPROD_ID = 1;
+
+
+(원래 오라클은 오토커밋이 아니지만,)
+자바에서 오라클을 사용할 때는,
+JDBC 오라클은 자동으로 커밋이 돼서 롤백을 할 수 없다 - 오토커밋
+그럴 때 아래의 코드 사용 
+SELECT *
+  FROM MEMBER AS OF TIMESTAMP(SYSTIMESTAMP - INTERVAL '10' MINUTE)
+ WHERE MEM_ID = 'a001';
+ 
+실수로 지웠다면 이런식으로 조회를 해서 복구 가능
+INSERT INTO MEMBER
+SELECT *
+  FROM MEMBER AS OF TIMESTAMP(SYSTIMESTAMP - INTERVAL '10' MINUTE)
+ WHERE MEM_ID = 'a001';
+ 
+ 
+SELECT * FROM TB_JDBC_BOARD;
+
+UPDATE TB_JDBC_BOARD
+--   SET (BOARD_NO, TITLE, CONTENT, WRITER)
+--        = (0, '제목3', '내용3', '작성자3')
+   SET BOARD_NO = 0,
+       TITLE = '제목3',
+       CONTENT = '내용3',
+       WRITER = '작성자3'
+ WHERE BOARD_NO = 3; 
