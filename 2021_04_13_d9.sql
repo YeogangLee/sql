@@ -182,7 +182,7 @@ SELECT 'P'||(SUBSTR(A.M, 2) + 1) -- SUBSTR(문자열,N,M) -- 두 번째 인덱�
   FROM (SELECT MAX(PROD_ID) AS M
           FROM PROD
          WHERE PROD_LGU = 'P202') A;
-         
+
 (실행)
 (신규분류코드-'P701','농축산물'-를 사용하는 경우)
 DECLARE
