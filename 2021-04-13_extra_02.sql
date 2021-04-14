@@ -115,12 +115,27 @@ ALIAS 는 거래처코드, 거래처명, 매입금액 합계이고
 SELECT A.PROD_BUYER 거래처코드,
        B.BUYER_NAME 거래처명,
        SUM(C.CART_QTY * A.PROD_PRICE) "매입금액 합계"
-       
   FROM PROD A, BUYER B, CART C
  WHERE A.PROD_BUYER = B.BUYER_ID
    AND C.CART_PROD = A.PROD_ID
-   AND C.CATY_NO LIKE IN ('200501','200502','200503')
+   AND (B.BUY_COST * C.CART_QTY) > 5000000
  GROUP BY A.PROD_BUYER, B.BUYER_NAME;
+
+-- 월별 조건 X
+
+
+- 풀이
+SELECT A.BUYER_ID AS 거래처코드,
+       A.BUYER_NAME AS 거래처명,
+       SUM(BUY_COST * BUY_QTY) AS 매입금액합계
+  FROM BUYER A, BUYPROD B, PROD C
+ WHERE B.BUY_PROD = C.PROD_ID -- 같은 상품이 선택
+   AND C.PROD_BUYER = A.BUYER_ID
+   AND B.BUY_DATE BETWEEN TO_DATE('20050101','YYYYMMDD') AND TO_DATE('20050331','YYYYMMDD')
+ GROUP BY A.BUYER_ID, A.BUYER_NAME
+ HAVING SUM(BUY_COST * BUY_QTY) >= 5000000;
+ -- 집계함수를 일반 조건으로 쓰고 싶을 때는
+ -- HAVING 을 사용, HAVING 의 위치는 GROUP BY 다음
 
 
 문제2);
@@ -131,6 +146,58 @@ ALIAS 는 부서코드, 부서명, 부서평균급여, 인원수
 이건 복잡해, 서브쿼리 써야하고
 특정 직원이 속한 부서의 평균 급여와 비교
 전체 직원과 비교하는 게 아니라
-부서 별로 몇명이냐~ 각 부서별로 평균급여가 얼마냐.     
+부서 별로 몇명이냐~ 각 부서별로 평균급여가 얼마냐.
+
+SELECT A.department_id, B.department_name
+
+-- 부서별 평균 급여 -- 인원수X
+SELECT A.department_id, B.department_name, ROUND(AVG(A.salary))
+  FROM employees A, departments B
+ WHERE A.department_id = B.department_id
+ GROUP BY A.department_id, B.department_name;
 
 
+- 풀이
+(메인쿼리 : 사원테이블EMPLOYEES 에서 부서별 평균 급여보다 급여를 많이 받는 직원들의 수)
+SELECT 부서코드, 부서명, 부서평균급여, 인원수
+  FROM
+  
+(서브쿼리1: 부서평균급여)
+SELECT DEPARTMENT_ID, ROUND(AVG(SALARY)) AS AVG_SAL
+  FROM EMPLOYEES
+ GROUP BY DEPARTMENT_ID
+ ORDER BY DEPARTMENT_ID;
+ 
+메인쿼리에서 GROUP BY 가 나와서는 안 된다
+
+(서브쿼리2: 부서평균급여보다 많은 급여를 받는 직원들의 수)
+SELECT A.DEPARTMENT_ID,
+       COUNT(*) AS CNT
+  FROM (SELECT DEPARTMENT_ID, ROUND(AVG(SALARY)) AS AVG_SAL
+          FROM EMPLOYEES
+         GROUP BY DEPARTMENT_ID
+         ORDER BY DEPARTMENT_ID) A, EMPLOYEES B
+ WHERE A.DEPARTMENT_ID = B.DEPARTMENT_ID
+   AND B.SALARY >= A.AVG_SAL
+ GROUP BY A.DEPARTMENT_ID;
+
+-- 문제2 답
+SELECT TBLA.DEPARTMENT_ID AS 부서코드,
+       TBLA.DEPARTMENT_NAME AS 부서명,
+       (SELECT ROUND(AVG(SALARY))
+          FROM EMPLOYEES TBLC
+         WHERE TBLC.DEPARTMENT_ID = TBLB.DID) AS 부서평균급여,
+        TBLB.CNT 인원수
+  FROM DEPARTMENTS TBLA,
+    (SELECT A.DEPARTMENT_ID DID, COUNT(*) AS CNT
+      FROM (SELECT DEPARTMENT_ID, ROUND(AVG(SALARY)) AS AVG_SAL
+              FROM EMPLOYEES
+             GROUP BY DEPARTMENT_ID
+             ORDER BY DEPARTMENT_ID) A, EMPLOYEES B
+     WHERE A.DEPARTMENT_ID = B.DEPARTMENT_ID
+       AND B.SALARY >= A.AVG_SAL
+     GROUP BY A.DEPARTMENT_ID
+     ORDER BY 1) TBLB
+ WHERE TBLA.DEPARTMENT_ID = TBLB.DID;
+ 
+ 
